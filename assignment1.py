@@ -5,7 +5,7 @@ If `a` is greater than or equal to `b` it returns true otherwise it returns fals
 def geq(a, b):
     if a >= b:
         return True
-    else
+    else:
         return False 
 
 
@@ -61,25 +61,30 @@ remove_inventory( str ) - this will remove at most one copy of an item from the 
   inventory. It should return True if it removed an item or False if the item was not found
 '''
 class Adventurer:
-    def __init__(self, gold, inventory, name):
-
-
-    def Constructor(self, name, gold):
+    def __init__(self, name, gold ):
+         
+        self.gold = gold
         self.name = name
-        if gold < 0:
-            self.gold = 0
-        else:
-            self.gold = gold
+        self.inventory = []
 
     def lose_gold(self, lose_gold):
-        self.gold -= lose_gold
+        if self.gold - lose_gold < 0: 
+            self.gold = 0
+            return False
+        else:
+            self.gold -= lose_gold
+            return True
 
     def win_gold(self, win_gold):
         self.gold += win_gold
 
     def add_inventory(self, add_inventory):
-        self.inventory += add_inventory
+        self.inventory.append(add_inventory)
 
     def remove_inventory(self, remove_inventory):
-        self.inventory -= remove_inventory
+        if remove_inventory in self.inventory:
+            self.inventory.remove(remove_inventory)
+            return True
+        else:
+            return False
 
