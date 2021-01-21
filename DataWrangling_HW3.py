@@ -16,6 +16,8 @@ def getData():
         'cuisines', 'dishTypes', 'occasions', 'equipment' - key's to access useful list values. not always available
         'ingredients', contains a list of dictionaries. 'name' is the key to access ingredient name. Organized by step
         'title', 'readyInMinutes','sourceUrl', 'image', 'pricePerServing', summary' (maybe for the first 100char?)
+        equipment - recipe[0]['analyzedInstructions']['steps'][stepNumberInList]['equipment']
+
         '''
 
     url = "https://spoonacular-recipe-food-nutrition-v1.p.rapidapi.com/recipes/informationBulk"
@@ -29,26 +31,53 @@ def getData():
     n = 5 # Number of recipes to pull
 
     # Loop through numbers
+    f = open('Recipe.txt', 'w')
+    f.write("{")
+
     for k in range(1,n):
         recipeID = random.randint(1,300000)
         querystring = {"ids": str(recipeID)}
         response = requests.request("GET", url, headers=headers, params=querystring, json = True)
-
         recipe = json.loads(response.text)
         print(type(recipe))
 
         try:
-            recipieList[recipeID] = recipe[0]
-        except: # No recipe
+            f.write(str(recipeID) + ":" + str(recipe[0]) + '\n\n\n')
+        except Exception as e: # No recipe
             print("recipeID", recipeID, "is bad")
+            print(e)
             continue
 
-    with open('Recipe.txt','w') as f:
-        f.write("{")
-        for item in recipieList.values():
-            f.write(str(item) + "," + '\n\n\n')
-        f.write("}")
+        recipieList[recipeID] = {"cuisines" : recipe[0]['cuisines'], 
+                                'dishTypes': recipe[0]['dishTypes'], 
+                                'spoonScore': recipe[0]['spoonacularScore'], 
+                                'Vegan': recipe[0]['vegan'], 
+                                'Vegetarian': recipe[0]['vegetarian'],
+                                'ImageURL': recipe[0]['image'],
+                                'Title': recipe[0]['title'],
+                                'SourceURL': recipe[0]['sourceUrl'],
+                                'readyInMinutes': recipe[0]['readyInMinutes'],
+                                'PricePerServing': recipe[0]['pricePerServing'],
+                                'Summary': recipe[0]['summary'][:200].replace("</b>", "").replace("<b>", "").replace("</a>", "").replace("<a>", "")
+                                }
+                                
+        equipmentList = []
+        try:
+            for step in recipe[0]['analyzedInstructions'][0]['steps']:
+                pass
+                #print("item", step)
+                for equipment in step['equipment']:
+                    equipmentList.append(equipment['name'])
+        except Exception as e2:
+                print('Likely no equipment required', e2) 
+                continue
+                 
+        recipieList[recipeID]['equipment'] = equipmentList    
 
+        pprint.pprint(recipieList)
+
+
+    f.close()
     return recipieList
 
 getData()
