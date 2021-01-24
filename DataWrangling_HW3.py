@@ -7,7 +7,7 @@
 ## CAUTION: Do not run this code for more than 500 calls per day or Ben will get charged
 
 
-import requests, random, pprint, json
+import requests, random, pprint, json, pandas as pd, fsspec, matplotlib.pyplot
 
 # Gets data from recipe site
 def getData():
@@ -62,7 +62,8 @@ def getData():
                 pass
                 #print("item", step)
                 for equipment in step['equipment']:
-                    equipmentList.append(equipment['name'])
+                    if equipment['name'] not in equipmentList:
+                        equipmentList.append(equipment['name'])
         except Exception as e2:
                 print('Likely no equipment required', e2) 
                 continue  
@@ -71,8 +72,8 @@ def getData():
     # Write dataDict to file
     f = open('Recipe.txt', 'w')
     for key, val in recipeDict.items():
-        f.write('{' + str(key) + ':' + str(val) + '}' + '\n')
-        print('writen')
+        f.write( str(key) + ':' + str(val) )
+        #print('writen')
     f.close()
     return recipeDict
 
@@ -80,11 +81,36 @@ def getData():
 def convertJson(recipeDict):
     '''Takes recipeDict and converts it to json file type'''
     jsonObj = json.dumps(recipeDict)
-    with open('jsonRecipe.txt','w') as f:
+    with open('jsonRecipe.json','w') as f:
         f.write(jsonObj) 
     return jsonObj
     
 
+def jsonToCSV(jsonObj): 
+    '''Takes json file and converts it to csv'''
+    df = pd.read_json('jsonRecipe.json')
+    with open('csvRecipe.csv', 'w', newline = '') as f:
+        f.write(df.to_csv())
+        df.to_csv()
+    return df.transpose()
+
+
+def transposeCSV(csvLoc):
+    pd.read_csv(csvLoc, header = None).T.to_csv('transposed.csv', header = False, index = False)
+
 # >>>>>>>>>>>> MAIN SCRIPT <<<<<<<<<<<<<<<<
 recipeDict = getData()
-print(convertJson(recipeDict))
+jsonObj = convertJson(recipeDict)
+print('jsonobj' , type(jsonObj))
+df = jsonToCSV(jsonObj)
+#transposeCSV('csvRecipe.csv')
+print(df)
+
+
+# Plot
+fig = matplotlib.pyplot.figure()
+ax = fig.add_subplot(111)
+ax.hist(df['readyInMinutes'])
+ax.set_title("HW3 Matplotlib Load Data Proof")
+ax.set_xlabel('Ready in Minutes')
+matplotlib.pyplot.show()
