@@ -98,6 +98,17 @@ def jsonToCSV(jsonObj):
 
 def transposeCSV(csvLoc):
     pd.read_csv(csvLoc, header = None).T.to_csv('transposed.csv', header = False, index = False)
+    
+def CSVtoJSON(csvLoc):
+    data = {}
+    with open(csvLoc) as csvdoc:
+        csvRead = csv.DictReader(csvdoc)
+        for rows in csvRead:
+            id = rows['']
+            data[id] = rows
+    with open('recipes.json', 'w') as jsondoc:
+        jsondoc.write(json.dumps(data))
+    print(data)
 
 # >>>>>>>>>>>> MAIN SCRIPT <<<<<<<<<<<<<<<<
 recipeDict = getData()
@@ -106,6 +117,7 @@ print('jsonobj' , type(jsonObj))
 df = jsonToCSV(jsonObj)
 transposeCSV('csvRecipe.csv')
 #print(df)
+CSVtoJSON('transposed.csv')
 
 
 # Plot
