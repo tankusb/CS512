@@ -28,14 +28,13 @@ def getData():
         }
 
     recipeDict = {}
-    n = 5 # Number of recipes to pull
+    n = 10 # Number of recipes to pull
 
     for k in range(1,n):
         recipeID = random.randint(1,300000)
         querystring = {"ids": str(recipeID)}
         response = requests.request("GET", url, headers=headers, params=querystring, json = True)
         recipe = json.loads(response.text)
-        print(type(recipe))
 
         # Fill data dict with easy entries
         try:
@@ -51,16 +50,18 @@ def getData():
                                     'PricePerServing': recipe[0]['pricePerServing'],
                                     'Summary': recipe[0]['summary'][:200].replace("</b>", "").replace("<b>", "").replace("</a>", "").replace("<a>", "")
                                     }
+
         except:
             print('Bad Recipe')
             continue
 
+        print("Clean Recipe")
+        
         # Add equipment to data dict
         equipmentList = []
         try:
             for step in recipe[0]['analyzedInstructions'][0]['steps']:
                 pass
-                #print("item", step)
                 for equipment in step['equipment']:
                     if equipment['name'] not in equipmentList:
                         equipmentList.append(equipment['name'])
@@ -103,8 +104,8 @@ recipeDict = getData()
 jsonObj = convertJson(recipeDict)
 print('jsonobj' , type(jsonObj))
 df = jsonToCSV(jsonObj)
-#transposeCSV('csvRecipe.csv')
-print(df)
+transposeCSV('csvRecipe.csv')
+#print(df)
 
 
 # Plot
