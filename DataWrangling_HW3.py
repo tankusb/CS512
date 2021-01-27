@@ -99,7 +99,7 @@ def jsonToCSV(jsonObj):
 def CSVtoJSON(csvLoc):
     '''Takes CSV file and converts it to JSON'''
     dfCSV = pd.read_csv(csvLoc)
-    dfCSV.to_json('recipesT.json')
+    dfCSV.to_json('recipes.json')
     
     
 
