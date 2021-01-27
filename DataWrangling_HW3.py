@@ -93,13 +93,13 @@ def jsonToCSV(jsonObj):
     dfTransp = df.T
     dfTransp.index.name = "id"
     fileName = 'csvRecipe.csv'
-    dfTransp.to_csv(fileName, header = True, index = True)
+    dfTransp.to_csv(fileName, index = True)
     return fileName   # USED IN CSVtoJSON FUNCTION
 
 def CSVtoJSON(csvLoc):
     '''Takes CSV file and converts it to JSON'''
     dfCSV = pd.read_csv(csvLoc)
-    dfCSV.to_json('recipes.json')
+    dfCSV.T.to_json('recipes.json') # TRANSPOSE DF BACK TO MAINTAIN OBJECT:NAMEPAIR JSON FORMAT
     
     
 
