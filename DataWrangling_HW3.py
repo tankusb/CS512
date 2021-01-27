@@ -7,7 +7,7 @@
 ## CAUTION: Do not run this code for more than 500 calls per day or Ben will get charged
 
 
-import requests, random, pprint, json, pandas as pd, fsspec, matplotlib.pyplot
+import requests, random, pprint, json, pandas as pd, fsspec, matplotlib.pyplot, csv
 
 # Gets data from recipe site
 def getData():
@@ -28,7 +28,7 @@ def getData():
         }
 
     recipeDict = {}
-    n = 10 # Number of recipes to pull
+    n = 5 # Number of recipes to pull
 
     for k in range(1,n):
         recipeID = random.randint(1,300000)
@@ -90,24 +90,26 @@ def convertJson(recipeDict):
 def jsonToCSV(jsonObj): 
     '''Takes json file and converts it to csv'''
     df = pd.read_json('jsonRecipe.json')
-    with open('csvRecipe.csv', 'w', newline = '') as f:
-        f.write(df.to_csv())
-        df.to_csv()
-    return df.transpose()
+    dfTransp = df.T
+    dfTransp.index.name = "id"
+    fileName = 'csvRecipe.csv'
+    dfTransp.to_csv(fileName, header = True, index = True)
+    return fileName   # USED IN CSVtoJSON FUNCTION
 
-
-def transposeCSV(csvLoc):
-    pd.read_csv(csvLoc, header = None).T.to_csv('transposed.csv', header = False, index = False)
+def CSVtoJSON(csvLoc):
+    '''Takes CSV file and converts it to JSON'''
+    dfCSV = pd.read_csv(csvLoc)
+    dfCSV.to_json('recipesT.json')
+    
+    
 
 # >>>>>>>>>>>> MAIN SCRIPT <<<<<<<<<<<<<<<<
-recipeDict = getData()
-jsonObj = convertJson(recipeDict)
-print('jsonobj' , type(jsonObj))
-df = jsonToCSV(jsonObj)
-transposeCSV('csvRecipe.csv')
-#print(df)
+recipeDict = getData()   # GRAB DATA
+jsonObj = convertJson(recipeDict) # CONVERT ORIGINAL DATA PULL TO JSON FORMAT
+CSVFileLoc = jsonToCSV(jsonObj)  # CONVERT JSON TO CSV
+CSVtoJSON(CSVFileLoc) # CONVERT CSV TO JSON
 
-
+df = pd.read_csv(CSVFileLoc)
 # Plot
 fig = matplotlib.pyplot.figure()
 ax = fig.add_subplot(111)
