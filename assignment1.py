@@ -32,7 +32,7 @@ def logical_mess(a, b, c):
         return 2
     elif a > b and b > c:
         return 3
-    elif c == 10 and a <> 5:
+    elif c == 10 and a != 5:
         return 4
     elif c == 10 and a == 5:
         return 5
