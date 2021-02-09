@@ -28,7 +28,7 @@ def getData():
         }
 
     recipeDict = {}
-    n = 10 # Number of recipes to pull
+    n = 250 # Number of recipes to pull
 
     for k in range(1,n):
         recipeID = random.randint(1,300000)
