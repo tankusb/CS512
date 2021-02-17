@@ -22,7 +22,7 @@ library(Sleuth3)
 df = read.csv('cleanDF.csv')
 head(df)
 
-fit <- lm(spoonScore ~ PricePerServing + EquipLen + logReadyInMinutes , data = df)
+fit <- lm(spoonScore ~ PricePerServing + EquipLen + logReadyInMinutes+ EquipLen:logReadyInMinutes , data = df)
 summary(fit)
 
 ```
